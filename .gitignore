@@ -53,3 +53,4 @@ app.*.map.json
 *.elc
 .DS_Store
 *~$*
+*.db
