@@ -33,7 +33,6 @@ void main() async {
       ),
     ),
   );
-  // WidgetsFlutterBinding.ensureInitialized(); // is this necessary?
 }
 
 class MyDrawer extends StatelessWidget {
