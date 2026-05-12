@@ -42,3 +42,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+/archive
+/lib/bups
+
+# --- emacs ---
+*~
+\#*\#
+.\#*
+*.elc
+.DS_Store
+*~$*
