@@ -1,6 +1,5 @@
-import 'dart:convert';
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class IconPicker extends StatefulWidget {
   IconPicker({super.key});
@@ -12,12 +11,8 @@ class IconPicker extends StatefulWidget {
 }
 
 class _IconPickerState extends State<IconPicker> {
-  late Future<String> manifestJson;
-  late List<String> icons;
-  late List<String> iconList;
-  late List<String> items;
-
-  TextEditingController editingController = TextEditingController();
+  List<String> icons = [];
+  List<String> items = [];
 
   @override
   void initState() {
@@ -26,14 +21,19 @@ class _IconPickerState extends State<IconPicker> {
   }
 
   Future<List<String>> loadAssets() async {
-    final manifestJson =
-        await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
-    // ignore: no_leading_underscores_for_local_identifiers
-    final _icons = await json
-        .decode(manifestJson)
-        .keys
-        .where((String key) => key.startsWith('images/car_icons/'))
-        .toList();
+    List<String> _icons = [];
+    try {
+      final assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+      _icons = assetManifest
+          .listAssets()
+          .where((String key) => key.startsWith('images/car_icons/'))
+          .toList();
+    } catch (error) {
+      print('unable to load car icon assets: $error');
+    }
+    if (!mounted) {
+      return _icons;
+    }
     setState(() {
       icons = _icons;
       items = _icons;
