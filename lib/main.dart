@@ -1,17 +1,20 @@
-import 'dart:collection';
+import 'dart:io';
+
 import 'package:dash/utils/garage_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:path/path.dart';
-// import 'package:sqflite/sqflite.dart';
-import 'package:dash/utils/dbhelper_sqflite.dart';
-import 'package:dash/models/car.dart';
-import 'package:dash/models/txn.dart';
 import 'package:dash/screens/screens.dart';
 import 'package:dash/theme.dart';
-// import 'package:flutter/src/widgets/form.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+
   runApp(
     ChangeNotifierProvider(
       create: (context) => GarageModel(),
@@ -89,6 +92,14 @@ class MyDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: const Text('About'),
+            onTap: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const AboutScreen()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.car_crash),
+            title: const Text('Test'),
             onTap: () {
               Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const AboutScreen()));

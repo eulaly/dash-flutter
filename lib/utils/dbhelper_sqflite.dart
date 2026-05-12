@@ -31,6 +31,7 @@ class DbHelperSqlite {
     print('initializing db');
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String dbPath = join(documentsDirectory.path, _dbName);
+    print('sqlite db path: $dbPath');
     return await openDatabase(dbPath, version: _dbVersion, onCreate: _onCreate);
   }
 
