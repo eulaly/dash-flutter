@@ -15,7 +15,9 @@ class Car {
     nickname = map[colNickname];
     plate = map[colPlate];
     mileage = map[colMileage];
-    icon = map[colIcon];
+    icon = map.containsKey(colIcon)
+        ? map[colIcon] ?? 'images/car.png'
+        : 'images/car.png';
   }
 
   int? id;

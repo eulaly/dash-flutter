@@ -39,7 +39,7 @@ class DbHelperSqlite {
     //docs say to avoid `autoincrement` kw
     await db.execute("PRAGMA foreign_keys=ON;");
     await db.execute('''
-      CREATE TABLE ${Car.tblCars} (
+      CREATE TABLE IF NOT EXISTS ${Car.tblCars} (
         ${Car.colId} INTEGER PRIMARY KEY,
         ${Car.colVin} TEXT UNIQUE,
         ${Car.colNickname} TEXT,
@@ -48,7 +48,7 @@ class DbHelperSqlite {
         ${Car.colIcon} TEXT);
         ''');
     await db.execute('''
-      CREATE TABLE ${Txn.tblTxns} (
+      CREATE TABLE IF NOT EXISTS ${Txn.tblTxns} (
         ${Txn.colId} INTEGER PRIMARY KEY,
         ${Txn.colType} TEXT,
         ${Txn.colDatetime} INTEGER,
@@ -60,9 +60,20 @@ class DbHelperSqlite {
         ''');
   }
 
+  Future<Map<String, dynamic>> _carMapForDatabase(Database db, Car car) async {
+    final map = car.toMap();
+    final columns = await db.rawQuery("PRAGMA table_info(${Car.tblCars})");
+    final hasIconColumn =
+        columns.any((column) => column['name'] == Car.colIcon);
+    if (!hasIconColumn) {
+      map.remove(Car.colIcon);
+    }
+    return map;
+  }
+
   Future<int> insertCar(Car car) async {
     Database db = await instance.database as Database;
-    return await db.insert(Car.tblCars, car.toMap(),
+    return await db.insert(Car.tblCars, await _carMapForDatabase(db, car),
         conflictAlgorithm: ConflictAlgorithm.abort);
   }
 
@@ -79,7 +90,7 @@ class DbHelperSqlite {
   Future<int> updateCar(Car car) async {
     Database db = await instance.database as Database;
     print('car id to update: ${car.id}');
-    return await db.update(Car.tblCars, car.toMap(),
+    return await db.update(Car.tblCars, await _carMapForDatabase(db, car),
         where: '${Car.colId}=?', whereArgs: [car.id]);
   }
 
